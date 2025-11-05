@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#FF2A1246</color>
+    <color name="primary_2">#B3000000</color>
+    <color name="secondary">#1A1A1A</color>
+    <color name="carousel_button">#E4E7EC</color>
+    <color name="sign_up">#344054</color>
+    <color name="borders">#D0D5DD</color>
+    <color name="form_gray">#667085</color>
+    <color name="label">#404040</color>
+    <color name="error">#B71C1C</color>
+    <color name="title">#101828</color>
+    <color name="items">#29183B</color>
+    <color name="sub_items">#ADB5BD</color>
+    <color name="line">#EDEDED</color>
+    <color name="main_search">#F9F5FF</color>
+
+</resources>
