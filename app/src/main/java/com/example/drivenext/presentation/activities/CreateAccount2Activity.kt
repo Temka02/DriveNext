@@ -28,9 +28,15 @@ class CreateAccount2Activity : AppCompatActivity() {
     private lateinit var radioGroupSex: RadioGroup
     private lateinit var continueButton: Button
 
+    private var email: String = ""
+    private var password: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account2)
+
+        email = intent.getStringExtra("EMAIL") ?: ""
+        password = intent.getStringExtra("PASSWORD") ?: ""
 
         // Инициализация
         backImage = findViewById(R.id.imageViewArrowLeft)
@@ -134,7 +140,27 @@ class CreateAccount2Activity : AppCompatActivity() {
 
         continueButton.setOnClickListener {
             if (validateForm()) {
-                startActivity(Intent(this, CreateAccount3Activity::class.java))
+                val surname = surnameEditText.text.toString().trim()
+                val name = nameEditText.text.toString().trim()
+                val patronymic = patronymicEditText.text.toString().trim()
+                val dob = dobEditText.text.toString().trim()
+                val selectedSexId = radioGroupSex.checkedRadioButtonId
+                val sex = when (selectedSexId) {
+                    R.id.radioMan -> "Мужской"
+                    R.id.radioWoman -> "Женский"
+                    else -> ""
+                }
+
+                val intent = Intent(this, CreateAccount3Activity::class.java)
+                // Передаем все данные
+                intent.putExtra("EMAIL", email)
+                intent.putExtra("PASSWORD", password)
+                intent.putExtra("SURNAME", surname)
+                intent.putExtra("NAME", name)
+                intent.putExtra("PATRONYMIC", patronymic)
+                intent.putExtra("DOB", dob)
+                intent.putExtra("SEX", sex)
+                startActivity(intent)
             }
         }
     }

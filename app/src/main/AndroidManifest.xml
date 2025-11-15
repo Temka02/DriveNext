@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.drivenext">
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
@@ -28,6 +29,12 @@
         <activity android:name=".presentation.activities.CreateAccount3Activity" />
         <activity android:name=".presentation.activities.SuccessActivity" />
         <activity android:name=".presentation.activities.NoConnectionActivity" />
+        <activity android:name=".presentation.activities.MainActivity" />
+        <activity android:name=".presentation.activities.ProfileActivity" />
+        <activity android:name=".presentation.activities.ChangingPasswordActivity" />
+        <activity android:name=".presentation.activities.SettingsActivity" />
+        <activity android:name=".presentation.activities.SearchLoadingActivity"/>
+        <activity android:name=".presentation.activities.SearchResultActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"

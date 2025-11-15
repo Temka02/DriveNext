@@ -41,7 +41,7 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")  // Обновили до 1.11.0
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     // ViewModel и LiveData
@@ -54,10 +54,17 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.2")
 
     // Supabase
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:1.4.0")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:1.4.0")
-    implementation("io.github.jan-tennert.supabase:storage-kt:1.4.0")
-    implementation("io.ktor:ktor-client-okhttp:2.3.3")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:1.4.1")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:1.4.1")
+    implementation("io.ktor:ktor-client-android:2.3.4")
+    implementation("io.ktor:ktor-client-core:2.3.5")
+    implementation("io.ktor:ktor-client-cio:2.3.5")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
+    // Для JSON
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.json:json:20231013")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

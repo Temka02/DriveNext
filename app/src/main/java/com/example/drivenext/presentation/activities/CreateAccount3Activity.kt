@@ -1,4 +1,5 @@
 package com.example.drivenext.presentation.activities
+
 import android.widget.Toast
 import android.app.Activity
 import android.content.Intent
@@ -15,12 +16,17 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.drivenext.R
+import com.example.drivenext.domain.model.User
+import com.example.drivenext.utils.SessionManager
+import com.example.drivenext.utils.SupabaseHelper
+import kotlinx.coroutines.launch
 
 class CreateAccount3Activity : AppCompatActivity() {
     private lateinit var backImage: ImageView
@@ -36,13 +42,22 @@ class CreateAccount3Activity : AppCompatActivity() {
     private var licensePhotoUri: Uri? = null
     private var passPhotoUri: Uri? = null
     private var profilePhotoUri: Uri? = null
-
     private var currentImageButton: ImageView? = null
+    private lateinit var sessionManager: SessionManager
+
+    // Данные из предыдущих активностей
+    private lateinit var email: String
+    private lateinit var password: String
+    private lateinit var surname: String
+    private lateinit var name: String
+    private lateinit var patronymic: String
+    private lateinit var dob: String
+    private lateinit var sex: String
 
     private val getImageFromGallery = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
 
             when {
@@ -84,6 +99,11 @@ class CreateAccount3Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account3)
 
+        sessionManager = SessionManager(this)
+
+        // Получаем данные из предыдущих активностей
+        getDataFromIntent()
+
         backImage = findViewById(R.id.imageViewArrowLeft)
         licenseInputLayout = findViewById(R.id.licenseInputLayout)
         licenseEditText = findViewById(R.id.licenseEditText)
@@ -92,7 +112,7 @@ class CreateAccount3Activity : AppCompatActivity() {
         uploadLicenseButton = findViewById(R.id.imageViewLicenseUpload)
         uploadPassButton = findViewById(R.id.imageViewPassportUpload)
         profileButton = findViewById(R.id.imageViewProfile)
-        continueButton = findViewById(R.id.buttonContinue)
+        continueButton = findViewById(R.id.buttonContinueLast)
 
         backImage.setOnClickListener { finish() }
 
@@ -120,7 +140,7 @@ class CreateAccount3Activity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 if (s == null) return
-                var digits = s.toString().replace("/", "")
+                val digits = s.toString().replace("/", "")
                 if (digits == current) return
 
                 if (!isDeleting) {
@@ -152,8 +172,24 @@ class CreateAccount3Activity : AppCompatActivity() {
 
         continueButton.setOnClickListener {
             if (validateForm()) {
-                startActivity(Intent(this, SuccessActivity::class.java))
+                registerUser()
             }
+        }
+    }
+
+    private fun getDataFromIntent() {
+        email = intent.getStringExtra("EMAIL") ?: ""
+        password = intent.getStringExtra("PASSWORD") ?: ""
+        surname = intent.getStringExtra("SURNAME") ?: ""
+        name = intent.getStringExtra("NAME") ?: ""
+        patronymic = intent.getStringExtra("PATRONYMIC") ?: ""
+        dob = intent.getStringExtra("DOB") ?: ""
+        sex = intent.getStringExtra("SEX") ?: ""
+
+        // Проверяем, что все обязательные данные получены
+        if (email.isEmpty() || password.isEmpty() || surname.isEmpty() || name.isEmpty() || dob.isEmpty() || sex.isEmpty()) {
+            Toast.makeText(this, "Ошибка: не все данные получены", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
@@ -214,11 +250,6 @@ class CreateAccount3Activity : AppCompatActivity() {
             isValid = false
         }
 
-        if (profilePhotoUri == null) {
-            Toast.makeText(this, "Пожалуйста, загрузите все необходимые фото.", Toast.LENGTH_SHORT).show()
-            isValid = false
-        }
-
         return isValid
     }
 
@@ -241,6 +272,52 @@ class CreateAccount3Activity : AppCompatActivity() {
             true
         } catch (e: ParseException) {
             false
+        }
+    }
+
+    private fun registerUser() {
+        val license = licenseEditText.text.toString().trim()
+        val licenseDate = dateEditText.text.toString().trim()
+
+        val user = User.createForRegistration(
+            email = email,
+            password = password,
+            surname = surname,
+            name = name,
+            patronymic = if (patronymic.isEmpty()) null else patronymic,
+            dob = dob,
+            sex = sex,
+            licenseNumber = license,
+            licenseDate = licenseDate
+        )
+
+        lifecycleScope.launch {
+            continueButton.isEnabled = false
+            continueButton.text = "Регистрация..."
+
+            val isSuccess = SupabaseHelper.registerUser(user, this@CreateAccount3Activity)
+
+            if (isSuccess) {
+                val registeredUser = SupabaseHelper.signInUser(email, password, this@CreateAccount3Activity)
+                if (registeredUser != null) {
+                    sessionManager.createLoginSession(
+                        userId = registeredUser.id,
+                        email = registeredUser.email,
+                        name = registeredUser.name,
+                        surname = registeredUser.surname,
+                        registrationDate = registeredUser.registrationDate
+                    )
+                    val intent = Intent(this@CreateAccount3Activity, SuccessActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    continueButton.isEnabled = true
+                    continueButton.text = "Продолжить"
+                }
+            } else {
+                continueButton.isEnabled = true
+                continueButton.text = "Продолжить"
+            }
         }
     }
 }

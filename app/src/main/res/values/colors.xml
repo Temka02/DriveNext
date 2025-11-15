@@ -6,6 +6,7 @@
     <color name="primary_2">#B3000000</color>
     <color name="secondary">#1A1A1A</color>
     <color name="carousel_button">#E4E7EC</color>
+    <color name="card_grey">#0D0D0D33</color>
     <color name="sign_up">#344054</color>
     <color name="borders">#D0D5DD</color>
     <color name="form_gray">#667085</color>

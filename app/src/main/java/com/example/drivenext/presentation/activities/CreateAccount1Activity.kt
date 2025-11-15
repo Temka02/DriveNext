@@ -25,6 +25,11 @@ class CreateAccount1Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account1)
 
+        initViews()
+        setupListeners()
+    }
+
+    private fun initViews() {
         backImage = findViewById(R.id.imageViewArrowLeft)
         emailInputLayout = findViewById(R.id.emailInputLayout)
         passwordInputLayout = findViewById(R.id.passwordInputLayout)
@@ -35,7 +40,9 @@ class CreateAccount1Activity : AppCompatActivity() {
         checkBoxPolicy = findViewById(R.id.checkBoxPolicy)
         checkBoxErrorText = findViewById(R.id.checkBoxErrorText)
         continueButton = findViewById(R.id.buttonContinue)
+    }
 
+    private fun setupListeners() {
         backImage.setOnClickListener { finish() }
 
         emailEditText.setOnFocusChangeListener { _, _ -> emailInputLayout.error = null }
@@ -45,7 +52,7 @@ class CreateAccount1Activity : AppCompatActivity() {
 
         continueButton.setOnClickListener {
             if (validateForm()) {
-                startActivity(Intent(this, CreateAccount2Activity::class.java))
+                goToNextStep()
             }
         }
     }
@@ -94,5 +101,15 @@ class CreateAccount1Activity : AppCompatActivity() {
         }
 
         return isValid
+    }
+
+    private fun goToNextStep() {
+        val email = emailEditText.text.toString().trim()
+        val password = passwordEditText.text.toString()
+
+        val intent = Intent(this, CreateAccount2Activity::class.java)
+        intent.putExtra("EMAIL", email)
+        intent.putExtra("PASSWORD", password)
+        startActivity(intent)
     }
 }
